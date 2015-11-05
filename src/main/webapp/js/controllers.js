@@ -31,6 +31,7 @@ angular.module('bankApp')
             $http.get('/api/account/' + username)
                 .success(function(account) {
                     $scope.account = account;
+                    $scope.transactions = account.transactions.transactions;
                 });
         };
 
