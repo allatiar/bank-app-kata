@@ -62,10 +62,44 @@ public class AccountResourceIT extends HttpServerIT {
     should_update_account() {
         accountResource.request().put(json(BOB_ACCOUNT)).readEntity(Account.class);
         Account bobAccount = accountResource.path("bob").request().get(Account.class);
-        bobAccount.deposit(10);
 
+        bobAccount.deposit(30);
         accountResource.request().put(json(bobAccount));
+        assertThat(accountResource.path("bob").request().get(Account.class).balance(), is(30D));
 
+        bobAccount.withdraw(10);
+        accountResource.request().put(json(bobAccount));
+        assertThat(accountResource.path("bob").request().get(Account.class).balance(), is(20D));
+    }
+
+    @Test public void
+    should_update_account_overdraft() {
+        accountResource.request().put(json(BOB_ACCOUNT)).readEntity(Account.class);
+        Account bobAccount = accountResource.path("bob").request().get(Account.class);
+        bobAccount.deposit(10);
+        bobAccount.withdraw(20);
+        accountResource.request().put(json(bobAccount));
+        assertThat(accountResource.path("bob").request().get(Account.class).balance(), is(0D));
+    }
+
+    @Test public void
+    should_update_account_with_weirds_values() {
+        accountResource.request().put(json(BOB_ACCOUNT)).readEntity(Account.class);
+        Account bobAccount = accountResource.path("bob").request().get(Account.class);
+        bobAccount.deposit(10);
+        accountResource.request().put(json(bobAccount));
+        assertThat(accountResource.path("bob").request().get(Account.class).balance(), is(10D));
+        bobAccount.deposit(0);
+        accountResource.request().put(json(bobAccount));
+        assertThat(accountResource.path("bob").request().get(Account.class).balance(), is(10D));
+        bobAccount.deposit(-10);
+        accountResource.request().put(json(bobAccount));
+        assertThat(accountResource.path("bob").request().get(Account.class).balance(), is(10D));
+        bobAccount.withdraw(0);
+        accountResource.request().put(json(bobAccount));
+        assertThat(accountResource.path("bob").request().get(Account.class).balance(), is(10D));
+        bobAccount.withdraw(-10);
+        accountResource.request().put(json(bobAccount));
         assertThat(accountResource.path("bob").request().get(Account.class).balance(), is(10D));
     }
 }

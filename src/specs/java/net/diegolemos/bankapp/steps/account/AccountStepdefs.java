@@ -1,5 +1,6 @@
 package net.diegolemos.bankapp.steps.account;
 
+import cucumber.api.PendingException;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
@@ -10,6 +11,7 @@ import net.diegolemos.bankapp.MyServer;
 import net.diegolemos.bankapp.client.Client;
 import net.diegolemos.bankapp.steps.client.ClientUI;
 import net.diegolemos.bankapp.steps.client.ClientUnit;
+import org.glassfish.grizzly.ThreadCache;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -22,7 +24,14 @@ public class AccountStepdefs {
     private WebDriver webDriver;
 
     @Before("@ui")
-    public void setUpUI() {
+    public void setUpUI() throws InterruptedException {
+
+        if (server != null) {
+            while (server.isStarted()) {
+                Thread.sleep(500L);
+            }
+        }
+
         server = MyServer.startServer(new BankAppBinder(), "8082");
         webDriver = new FirefoxDriver();
         account = new AccountUI(webDriver);
@@ -66,7 +75,23 @@ public class AccountStepdefs {
         }
     }
 
-    @After("@id")
+    @When("^(?:he|she) withdraws ([^\"]*) EUR from (?:his|her) account$")
+    public void heWithdrawsEURFromHisAccount(double amount) throws Throwable {
+        account.withdraw(amount);
+    }
+
+    @When("^(?:he|she) inputs ([^\"]*) EUR$")
+    public void sheInputsEURFromHerAccount(int amount) throws Throwable {
+        ((AccountUI) account).input(amount);
+
+    }
+
+    @Then("^there is an alert \"([^\"]*)\"$")
+    public void thereIsAnAlert(String alert) throws Throwable {
+        ((AccountUI) account).checkAlert(alert);
+    }
+
+    @After("@ui")
     public void tearDownUI() {
         webDriver.quit();
         server.shutdown();

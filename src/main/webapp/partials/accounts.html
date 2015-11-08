@@ -29,17 +29,29 @@
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="transaction in transactions">
+            <tr ng-repeat="transaction in account.transactions.transactions">
                 <td>
-                    <input name="amount" type="number" class="form-control" ng-model="transaction.amount">
+                    <span ng-bind="transaction.amount"></span>
                 </td>
                 <td>
-                    <select name="type" ng-model="transaction.type" class="form-control">
-                        <option>DEPOSIT</option>
+                    <span ng-bind="transaction.type"></span>
+                </td>
+                <td></td>
+            </tr>
+            <tr ng-repeat="transaction2 in transactions" ng-class="{'alert-warning': transaction2.error}">
+                <td>
+                    <input name="amount" type="number" class="form-control" ng-model="transaction2.amount"
+                           title="amount">
+                </td>
+                <td>
+                    <select name="type" ng-model="transaction2.type" class="form-control" title="type">
+                        <option value="DEPOSIT">DEPOSIT</option>
+                        <option value="WITHDRAW">WITHDRAW</option>
                     </select>
                 </td>
                 <td class="col-md-1">
-                    <button type="button" name="addTransactionBtn" class="btn btn-default btn-sm pull-right" ng-click="newTransaction()">
+                    <button type="button" name="addTransactionBtn" class="btn btn-default btn-sm pull-right"
+                            ng-click="newTransaction()">
                         <span class="glyphicon glyphicon-plus"></span>
                     </button>
                 </td>
@@ -48,17 +60,25 @@
             <tfoot>
             <tr>
                 <td>Balance</td>
-                <td>{{account.balance}} EUR</td>
+                <td id="balance">{{account.balance}} EUR</td>
                 <td></td>
             </tr>
             </tfoot>
         </table>
     </div>
 
+    <div ng-repeat="alert in alerts">
+        <div ng-if="alert.show" class="alert alert-warning">
+            <span ng-bind="alert.msg"></span>
+        </div>
+    </div>
+
     <div class="form-group">
         <div class="col-md-12">
             <div class="pull-right">
-                <button type="button" name="saveNewTransactionBtn" ng-click="updateAccount()" class="btn btn-default">Save</button>
+                <button type="button" name="saveNewTransactionBtn" ng-click="updateAccount()" class="btn btn-default">
+                    Save
+                </button>
             </div>
         </div>
     </div>

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Date;
 
 import static net.diegolemos.bankapp.transaction.Transaction.Type.DEPOSIT;
+import static net.diegolemos.bankapp.transaction.Transaction.Type.WITHDRAW;
 
 public class Transaction {
     @JsonProperty
@@ -88,5 +89,9 @@ public class Transaction {
         return amount < 0;
     }
 
-    public enum Type {DEPOSIT}
+    public static Transaction withdraw(double amount) {
+        return new Transaction(WITHDRAW, amount);
+    }
+
+    public enum Type {DEPOSIT, WITHDRAW}
 }

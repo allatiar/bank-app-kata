@@ -8,6 +8,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.util.List;
+
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -69,5 +71,60 @@ public class AccountUI implements Account {
         double actualBalance = Double.valueOf(webDriver.findElements(By.cssSelector("table[name=transactions] > tfoot > tr > td")).get(1).getText().split(" ")[0]);
         assertThat(expectedBalance, is(equalTo(actualBalance)));
 
+    }
+
+    @Override
+    public void withdraw(double amount) {
+        // aller sur la page des dépôts
+        webDriver.get("http://localhost:8082/#/accounts");
+
+        // attendre d'âtre sur la page
+        (new WebDriverWait(webDriver, 5)).until((Predicate<WebDriver>) driver -> driver.findElement(By.id("input-username")) != null);
+
+        // rechercher le compte
+        webDriver.findElement(By.id("input-username")).sendKeys(username);
+        webDriver.findElement(By.name("searchUserBtn")).click();
+        (new WebDriverWait(webDriver, 5)).until((Predicate<WebDriver>) driver -> driver.findElement(By.name("addTransactionBtn")) != null);
+
+        // retirer de l'argent
+        WebElement baseTable = webDriver.findElement(By.name("transactions"));
+        WebElement lines = baseTable.findElement(By.tagName("tbody"));
+        List<WebElement> linesElements = lines.findElements(By.tagName("tr"));
+        WebElement firstLine = linesElements.get(linesElements.size() - 1);
+        WebElement amountField = firstLine.findElement(By.cssSelector("td > input[name=amount]"));
+        amountField.sendKeys(String.valueOf(amount));
+        Select typeField = new Select(firstLine.findElement(By.cssSelector("td > select[name=type]")));
+        typeField.selectByValue("WITHDRAW");
+        webDriver.findElement(By.name("saveNewTransactionBtn")).click();
+    }
+
+    @SuppressWarnings("Duplicates")
+    public void input(double amount) {
+        // aller sur la page des dépôts
+        webDriver.get("http://localhost:8082/#/accounts");
+
+        // attendre d'âtre sur la page
+        (new WebDriverWait(webDriver, 5)).until((Predicate<WebDriver>) driver -> driver.findElement(By.id("input-username")) != null);
+
+        // rechercher le compte
+        webDriver.findElement(By.id("input-username")).sendKeys(username);
+        webDriver.findElement(By.name("searchUserBtn")).click();
+        (new WebDriverWait(webDriver, 5)).until((Predicate<WebDriver>) driver -> driver.findElement(By.name("addTransactionBtn")) != null);
+
+        // retirer de l'argent
+        WebElement baseTable = webDriver.findElement(By.name("transactions"));
+        WebElement lines = baseTable.findElement(By.tagName("tbody"));
+        List<WebElement> linesElements = lines.findElements(By.tagName("tr"));
+        WebElement firstLine = linesElements.get(linesElements.size() - 1);
+        WebElement amountField = firstLine.findElement(By.cssSelector("td > input[name=amount]"));
+        amountField.sendKeys(String.valueOf(amount));
+    }
+
+    public void checkAlert(String expectedAlert) {
+        // attendre d'être sur la page
+        (new WebDriverWait(webDriver, 5)).until((Predicate<WebDriver>) driver -> (webDriver.findElements(By.cssSelector("table[name=transactions]"))) != null);
+        // valider le montant de la balance
+        String actualAlert = webDriver.findElements(By.className("alert")).get(0).getText();
+        assertThat(expectedAlert, is(equalTo(actualAlert)));
     }
 }

@@ -19,7 +19,8 @@ public class AccountTest {
         account = new Account(BOB);
     }
 
-    @Test public void
+    @Test
+    public void
     should_calculate_balance_for_transactions() {
         account.deposit(10.0);
         account.deposit(20.0);
@@ -27,10 +28,55 @@ public class AccountTest {
         assertThat(account.balance(), is(30.0));
     }
 
-    @Test public void
+    @Test
+    public void
     should_deposit_money_into_account() {
         account.deposit(10.0);
 
+        assertThat(account.balance(), is(10.0));
+    }
+
+    @Test
+    public void should_withdraw_money_from_account() {
+        account.deposit(10.0);
+        account.withdraw(10.0);
+        assertThat(account.balance(), is(0.0));
+    }
+
+    @Test
+    public void should_withdraw_money_from_account_overdraft() {
+        account.deposit(10.0);
+        account.withdraw(30.0);
+        assertThat(account.balance(), is(0.0));
+    }
+
+//    @Test
+//    public void should_play_transactions_from_empty_account() {
+//        account.deposit(10.0);
+//        account.play(null);
+//
+//        assertThat(account.balance(), is(0.0));
+//    }
+
+    @Test
+    public void should_not_update_account_if_amount_equals_0() {
+        account.deposit(10.0);
+
+        account.deposit(0);
+        assertThat(account.balance(), is(10.0));
+
+        account.withdraw(0);
+        assertThat(account.balance(), is(10.0));
+    }
+
+    @Test
+    public void should_not_update_account_if_amount_is_negative() {
+        account.deposit(10.0);
+
+        account.deposit(-20);
+        assertThat(account.balance(), is(10.0));
+
+        account.withdraw(-50);
         assertThat(account.balance(), is(10.0));
     }
 }

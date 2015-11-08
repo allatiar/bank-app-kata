@@ -3,6 +3,7 @@ package net.diegolemos.bankapp.steps.account;
 import net.diegolemos.bankapp.account.AccountRepository;
 import net.diegolemos.bankapp.account.AccountService;
 import net.diegolemos.bankapp.client.ClientRepository;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -32,5 +33,10 @@ public class AccountUnit implements Account {
     @Override
     public void checkBalance(double expectedBalance) {
         assertThat(clientAccount.balance(), is(expectedBalance));
+    }
+
+    @Override
+    public void withdraw(double amount) {
+        clientAccount.withdraw(amount);
     }
 }

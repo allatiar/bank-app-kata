@@ -26,6 +26,7 @@ public class AccountService {
     }
 
     public void save(Account account) {
-        accounts.save(account);
+//        Account accountFromDb = accounts.forClient(account.holder());
+        accounts.save(account.play());
     }
 }

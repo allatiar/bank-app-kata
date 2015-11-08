@@ -6,7 +6,7 @@ import net.diegolemos.bankapp.client.Client;
 import net.diegolemos.bankapp.transaction.Transaction;
 import net.diegolemos.bankapp.transaction.Transactions;
 
-@JsonIgnoreProperties(ignoreUnknown=true)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Account {
 
     @JsonProperty
@@ -16,7 +16,9 @@ public class Account {
     private Transactions transactions = new Transactions();
 
     // Required by Jackson
-    private Account() {}
+    @SuppressWarnings("unused")
+    private Account() {
+    }
 
     public Account(Client client) {
         this.client = client;
@@ -32,7 +34,9 @@ public class Account {
     }
 
     public void deposit(double amount) {
-        transactions.add(Transaction.deposit(amount));
+        if (amount > 0) {
+            transactions.add(Transaction.deposit(amount));
+        }
     }
 
     @Override
@@ -57,5 +61,23 @@ public class Account {
                 ", balance=" + balance() +
                 ", transactions=" + transactions +
                 '}';
+    }
+
+    public void withdraw(double amount) {
+        if (amount > 0) {
+            transactions.add(Transaction.withdraw(balance() >= amount ? amount : balance()));
+        }
+    }
+
+    public Account play() {
+        Account result = new Account(this.holder());
+        for (Transaction transaction : transactions.getTransactions()) {
+            if (transaction.type().equals(Transaction.Type.WITHDRAW)) {
+                result.withdraw(transaction.amount());
+            } else {
+                result.deposit(transaction.amount());
+            }
+        }
+        return result;
     }
 }

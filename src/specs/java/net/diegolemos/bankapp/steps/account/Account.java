@@ -6,4 +6,6 @@ public interface Account {
     void deposit(double balance);
 
     void checkBalance(double expectedBalance);
+
+    void withdraw(double amount);
 }

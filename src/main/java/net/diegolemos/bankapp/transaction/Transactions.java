@@ -4,8 +4,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Predicate;
 
 public class Transactions {
+
+    public List<Transaction> getTransactions() {
+        return transactions;
+    }
 
     @JsonProperty
     private List<Transaction> transactions = new LinkedList<>();
@@ -15,7 +20,9 @@ public class Transactions {
     }
 
     public double balance() {
-        return transactions.stream().mapToDouble(Transaction::amount).sum();
+        Double deposit = transactions.stream().filter(transaction -> transaction.type().equals(Transaction.Type.DEPOSIT)).mapToDouble(Transaction::amount).sum();
+        Double withdraw = transactions.stream().filter(transaction -> transaction.type().equals(Transaction.Type.WITHDRAW)).mapToDouble(Transaction::amount).sum();
+        return deposit - withdraw;
     }
 
     @Override
